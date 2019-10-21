@@ -27,7 +27,7 @@ def findDominantBlob(pixelData, width, height, colours):
 
     for colour in colours:
         logMessage("Colour: " + str(colour))
-        blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 40)
+        blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 20)
         allBlobCenters += blobCenters
         allBlobs += blobs
         allBlobPixelLists += blobPixelLists
@@ -36,17 +36,9 @@ def findDominantBlob(pixelData, width, height, colours):
     if len(allBlobs) == 0:
         return [], [], allBlobPixelLists[0], []
 
-    index = 0
-    for i in range(len(allBlobs)):
-        dif = abs(width/2. - allBlobCenters[i][0])
-        size1 = len(allBlobs[i]) - dif/(float(width)/10.)
-        dif2 = abs(width/2. - allBlobCenters[index][0])
-        size2 = len(allBlobs[index]) - dif2/(float(width)/10.)
+    logMessage("Number of blobs " + str(len(allBlobs)))
 
-        if size1 > size2:
-            index = i
-
-    #index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/10.), i) for i, l in enumerate(allBlobs))[1]
+    index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/10.), i) for i, l in enumerate(allBlobs))[1]
 
     return allBlobCenters[index], allBlobs[index], allBlobPixelLists[index], allBlobColours[index]
 
