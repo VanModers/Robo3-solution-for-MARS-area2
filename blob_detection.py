@@ -126,7 +126,7 @@ def findBlobs(pixelData, width, height, colour, minThreshold, maxThreshold, thre
 
     sys.setrecursionlimit(10000)
 
-    logMessage("Best threshold: " + str(min(errors)))
+    #logMessage("Best threshold: " + str(min(errors)))
 
     # Create binary images
     blobsOfAllBinaryImages = []
@@ -152,6 +152,7 @@ def findBlobs(pixelData, width, height, colour, minThreshold, maxThreshold, thre
             singleBlobArray.append(blobsOfAllBinaryImages[i][j])
 
     # Merge blobs
+    mergedSingleBlobArray = []
     index = 0
     for blob1 in Elements(singleBlobArray, 0):
         index += 1
@@ -161,10 +162,11 @@ def findBlobs(pixelData, width, height, colour, minThreshold, maxThreshold, thre
             if getMagnitude(center1, center2) < minDistBetweenBlobs:
                 blob1 = mergeBlobs(blob1, blob2)
                 singleBlobArray.remove(blob2)
+        mergedSingleBlobArray.append(blob1)
 
     # Find blob centers
     centers = []
-    for i in range(len(singleBlobArray)):
-        centers.append(getCenterOfBlob(singleBlobArray[i], width))
+    for i in range(len(mergedSingleBlobArray)):
+        centers.append(getCenterOfBlob(mergedSingleBlobArray[i], width))
 
-    return centers, singleBlobArray, convertBlobToPixelList(singleBlobArray, width, height, 3)
+    return centers, mergedSingleBlobArray, convertBlobToPixelList(mergedSingleBlobArray, width, height, 3)
