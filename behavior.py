@@ -44,7 +44,7 @@ def findDominantBlob(pixelData, width, height, colours):
     index = 0
     for colour in colours:
         if not np.array_equal(colour, old_selected_colour):
-            blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 20)
+            blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 30)
             allBlobCenters += blobCenters
             allBlobs += blobs
             allBlobPixelLists += blobPixelLists
