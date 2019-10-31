@@ -61,7 +61,7 @@ def getDimensionsOfBlob(blob, width, height):
         maxX = max(x, maxX)
         maxY = max(y, maxY)
         minX = min(x, minX)
-        minY = max(y, minY)
+        minY = min(y, minY)
     dimensions = np.array([maxX, maxY, minX, minY])
     return dimensions
 
