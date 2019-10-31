@@ -244,7 +244,7 @@ def driveForSomeTime(pixelData, width, height, pixelData2, width2, height2):
     return [[], []]
 
 def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
-    global behaviour, selected_colour, selected_colour_id, old_selected_colour, left_cmd, right_cmd, current_cam, NumberOfBalls
+    global behaviour, selected_colour, colours, selected_colour_id, old_selected_colour, left_cmd, right_cmd, current_cam, NumberOfBalls
 
     if len(pixelData) > 0:
         logMessage("First Cam: Turning away...")
