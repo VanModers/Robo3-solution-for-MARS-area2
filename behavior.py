@@ -260,11 +260,13 @@ def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
                 NoOtherBalls = True
 
             index = 0
-            for Number in NumberOfBalls:
-                if Number > 0:
+            for i in range(len(NumberOfBalls)):
+                if NumberOfBalls[index] > 0:
                     NoOtherBalls = False
                 else:
+                    logMessage("No " + str(colours[index]) + " any more")
                     colours = np.delete(colours, index)
+                    NumberOfBalls.pop(index)
                     index -= 1
                 index += 1
 
