@@ -18,14 +18,14 @@ right_cmd = 0
 
 global current_cam
 
-NumberOfBalls = [1, 2, 2, 2]
+NumberOfBalls = [1, 3, 1, 1]
 
 selected_colour = np.array([0., 0., 0.])
 selected_colour_id = 0
 
 old_selected_colour = np.array([0., 0., 0.])
 
-colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [1., 0.1, 0.1], [0.2, 0.2, 1.]])
+colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [0.4, 0.4, 1.], [1., 0.2, 0.2]])
 
 drive_clock = clock()
 
