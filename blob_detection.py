@@ -3,6 +3,8 @@ import copy
 import sys
 import numpy as np;
 
+MINIMUM_BALL_SIZE = 2.0
+
 blobCenters = np.array([[]])
 blobPixels = np.array([[]])
 
@@ -171,3 +173,14 @@ def findBlobs(pixelData, width, height, colour, minThreshold, maxThreshold, thre
         centers.append(getCenterOfBlob(mergedSingleBlobArray[i], width))
 
     return centers, mergedSingleBlobArray, convertBlobToPixelList(mergedSingleBlobArray, width, height, 3)
+
+def isBall(blob, width, height):
+    dimensions = getDimensionsOfBlob(blob, width, height)
+    deltaX = dimensions[0] - dimensions[2]
+    deltaY = dimensions[1] - dimensions[3]
+    #logMessage("DeltaX: " + str(deltaX) + " DeltaY" + str(deltaY))
+
+    if deltaX <= deltaY and len(blob) > MINIMUM_BALL_SIZE:
+        return True
+
+    return False
