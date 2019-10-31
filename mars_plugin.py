@@ -26,15 +26,15 @@ def update(marsData):
     clearDict()
 
     #pixelData = cda.acquire_images()
-    pixelData, rangeData = cda.acquire_pixeldata(current_cam, 80., 60., [0, 60], [160, 120], current_cam, True)
+    pixelData, rangeData = cda.acquire_pixeldata(current_cam, 80., 37., [0, 60], [160, 97], current_cam, True)
     pixelData2 = []
     if len(pixelData) > 0:
         pixelData2, rangeData2 = cda.acquire_pixeldata(current_cam, 80, 60, [40, 0], [120, 60], "camZoomed", False)
 
-    (motor_left_cmd, motor_right_cmd, blobPixels, cornerPixels, current_cam) = doBehaviour(marsData, pixelData, 80, 60, pixelData2, 80, 60)
+    (motor_left_cmd, motor_right_cmd, blobPixels, cornerPixels, current_cam) = doBehaviour(marsData, pixelData, 80, 37, pixelData2, 80, 60)
     if len(pixelData) > 0:
         if len(blobPixels) > 0:
-            cda.writeImagePNGDataToFile("currentRobotBlobView", 80, 60, cda.toPixelList(blobPixels , 80, 60, 3))
+            cda.writeImagePNGDataToFile("currentRobotBlobView", 80, 37, cda.toPixelList(blobPixels , 80, 60, 3))
         if len(cornerPixels) > 0:
             cda.writeImagePNGDataToFile("currentRobotCornerView", 80, 60, cda.toPixelList(cornerPixels , 80, 60, 3))
         cda.reset_clock(current_cam)
