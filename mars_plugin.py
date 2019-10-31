@@ -3,7 +3,7 @@ from euclid import *
 import math
 import numpy as np;
 from camera_data_acquisition import CameraDataAcquisition, addCameraData
-from behavior import initialBehavior, doBehavior
+from behavior import initialBehaviour, doBehaviour
 
 
 global cda
@@ -13,7 +13,7 @@ def init():
     global cda
     clearDict()
     cda = CameraDataAcquisition()
-    initialBehavior()
+    initialBehaviour()
     setConfig("Robot", "behavior", 0)
     requestConfig("Robot", "behavior")
     setRunning(True)
@@ -31,7 +31,7 @@ def update(marsData):
     if len(pixelData) > 0:
         pixelData2, rangeData2 = cda.acquire_pixeldata(current_cam, 80, 60, [40, 0], [120, 60], "camZoomed", False)
 
-    (motor_left_cmd, motor_right_cmd, blobPixels, cornerPixels, current_cam) = doBehavior(marsData, pixelData, 80, 60, pixelData2, 80, 60)
+    (motor_left_cmd, motor_right_cmd, blobPixels, cornerPixels, current_cam) = doBehaviour(marsData, pixelData, 80, 60, pixelData2, 80, 60)
     if len(pixelData) > 0:
         if len(blobPixels) > 0:
             cda.writeImagePNGDataToFile("currentRobotBlobView", 80, 60, cda.toPixelList(blobPixels , 80, 60, 3))
