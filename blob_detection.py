@@ -116,11 +116,12 @@ def findBlobs(pixelData, width, height, colour, minThreshold, maxThreshold, thre
     for x in range(width):
         pixelLine = np.array([])
         for y in range(height):
-            #logMessage("R: " + str(pixelData[x][y][0]) + " G: " + str(pixelData[x][y][1]) + " B: " + str(pixelData[x][y][2]))
             error = 0.
-            for i in range(3):
-                error += (abs(colour[i] -(float(pixelData[x][y][i]) / float(pixelData[x][y][index]))) * 255.)
-                #value = value + (pixelData[x][y][i] - minimumColourValue) * (1./(1.-minimumColourPercentage)) * colour[i]
+            if pixelData[x][y][index] < 1e-8:
+                error = 255. * 3
+            else:
+                for i in range(3):
+                    error += (abs(colour[i] -(float(pixelData[x][y][i]) / float(pixelData[x][y][index]))) * 255.)
             colouredPixelData[x][y] = int(error)
             errors += [int(error)]
 
