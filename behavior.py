@@ -265,7 +265,7 @@ def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
                     NoOtherBalls = False
                 else:
                     logMessage("No " + str(colours[index]) + " any more")
-                    colours = np.delete(colours, index)
+                    colours = np.delete(colours, index, axis=0)
                     NumberOfBalls.pop(index)
                     index -= 1
                 index += 1
@@ -302,7 +302,7 @@ options = {0 : findBlob,
 }
 
 def initialBehaviour():
-    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam, colours
 
     behaviour = 0
     current_cam = "cam0"
