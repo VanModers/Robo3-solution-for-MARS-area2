@@ -178,7 +178,7 @@ def findField(pixelData, width, height, pixelData2, width2, height2):
     if len(pixelData) > 0:
         logMessage("Second Cam: Looking for corner...")
         cornerCenter, cornerList, cornerPixelList, cornerColour, cornerColourID = findDominantBlob(pixelData2, width2, height2, np.array([selected_colour]))
-        if len(cornerCenter) > 0:
+        if len(cornerCenter) > 0 and len(cornerList) > MINIMUM_CORNER_SIZE:
             logMessage("Corner at X: " + str(cornerCenter[0]) + " Y: " + str(cornerCenter[1]))
             if abs(cornerCenter[0] - width/2.) < CORNER_DIF:
                 logMessage("Turning towards blob...")
