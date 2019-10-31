@@ -27,17 +27,26 @@ colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [1., 0.1, 0.1], [0.2, 0.2, 1.
 drive_clock = clock()
 
 def findDominantBlob(pixelData, width, height, colours):
+    global old_selected_colour
+
     allBlobs = []
     allBlobPixelLists = []
     allBlobCenters = []
     allBlobColours = []
+    allBlobColourIDs = []
 
+    index = 0
     for colour in colours:
-        blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 10)
-        allBlobCenters += blobCenters
-        allBlobs += blobs
-        allBlobPixelLists += blobPixelLists
-        allBlobColours += [colour]*len(blobs)
+        if not np.array_equal(colour, old_selected_colour):
+            blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 10)
+            allBlobCenters += blobCenters
+            allBlobs += blobs
+            allBlobPixelLists += blobPixelLists
+            allBlobColours += [colour]*len(blobs)
+            allBlobColourIDs += [index]*len(blobs)
+        else:
+            allBlobPixelLists += [[]]
+        index += 1
 
     if len(allBlobs) == 0:
         return [], [], allBlobPixelLists[0], []
