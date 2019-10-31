@@ -49,11 +49,11 @@ def findDominantBlob(pixelData, width, height, colours):
         index += 1
 
     if len(allBlobs) == 0:
-        return [], [], allBlobPixelLists[0], []
+        return [], [], allBlobPixelLists[0], [], 0
 
-    index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/10.), i) for i, l in enumerate(allBlobs))[1]
+    index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/50.), i) for i, l in enumerate(allBlobs))[1]
 
-    return allBlobCenters[index], allBlobs[index], allBlobPixelLists[index], allBlobColours[index]
+    return allBlobCenters[index], allBlobs[index], allBlobPixelLists[index], allBlobColours[index], allBlobColourIDs[index]
 
 def alignWithBlob(center, width):
     global left_cmd, right_cmd, TURNING_DIF
