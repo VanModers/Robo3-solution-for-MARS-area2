@@ -54,8 +54,19 @@ def findDominantBlob(pixelData, width, height, colours):
             allBlobPixelLists += [[]]
         index += 1
 
+    index = 0
+    for i in range(0, len(allBlobs)):
+        if not isBall(allBlobs[index], width, height):
+            allBlobs.pop(index)
+            allBlobCenters.pop(index)
+            allBlobPixelLists.pop(index)
+            allBlobColours.pop(index)
+            allBlobColourIDs.pop(index)
+            index -= 1
+        index += 1
+
     if len(allBlobs) == 0:
-        return [], [], allBlobPixelLists[0], [], 0
+        return [], [], [], [], 0
 
     index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/50.), i) for i, l in enumerate(allBlobs))[1]
 
