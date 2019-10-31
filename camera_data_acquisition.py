@@ -124,14 +124,14 @@ class CameraDataAcquisition():
         global pixelData
         for camera_name in CAMERA_NAMES:
             requestCameraSensor(camera_name)
-            if self.elapsed_time(camera_name, 1.5):
+            if self.elapsed_time(camera_name, 1.0):
                 self.writeCameraToFile(camera_name)
         return pixelData
 
     def acquire_pixeldata(self, cam_name, newWidth, newHeight, upperCorner, lowerCorner, file_name, clock):
         global pixelData, rangeData
         requestCameraSensor(cam_name)
-        if self.elapsed_time(cam_name, 1.0) or not clock:
+        if self.elapsed_time(cam_name, 0.7) or not clock:
             self.getCameraPixelData(cam_name, newWidth, newHeight, upperCorner, lowerCorner)
             self.writeImagePNGDataToFile(file_name, int(newWidth), int(newHeight), pixelData)
             return pixelData, rangeData
