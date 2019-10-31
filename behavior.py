@@ -21,7 +21,7 @@ right_cmd = 0
 
 global current_cam
 
-NumberOfBalls = [1, 3, 1, 1]
+NumberOfBalls = [2, 3, 1, 1]
 
 selected_colour = np.array([0., 0., 0.])
 selected_colour_id = 0
