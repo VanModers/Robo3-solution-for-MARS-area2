@@ -1,6 +1,6 @@
 from mars_interface import *
 from time import clock
-from blob_detection import findBlobs
+from blob_detection import findBlobs, isBall, convertBlobToPixelList
 import random
 import copy
 import sys
@@ -44,7 +44,7 @@ def findDominantBlob(pixelData, width, height, colours):
     index = 0
     for colour in colours:
         if not np.array_equal(colour, old_selected_colour):
-            blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 10)
+            blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 20)
             allBlobCenters += blobCenters
             allBlobs += blobs
             allBlobPixelLists += blobPixelLists
