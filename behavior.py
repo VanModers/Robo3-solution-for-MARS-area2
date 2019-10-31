@@ -6,8 +6,8 @@ import copy
 import sys
 import numpy as np;
 
-TURNING_DIF = 3.0
-CORNER_DIF = 12.0
+TURNING_DIF = 2.0
+CORNER_DIF = 5.0
 MINIMUM_DISTANCE = 2.0
 
 MINIMUM_CORNER_SIZE = 8
@@ -28,7 +28,7 @@ selected_colour_id = 0
 
 old_selected_colour = np.array([0., 0., 0.])
 
-colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [0.4, 0.4, 1.], [1., 0.1, 0.1]])
+colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [0.4, 0.4, 1.], [1., 0.2, 0.2]])
 
 drive_clock = clock()
 
