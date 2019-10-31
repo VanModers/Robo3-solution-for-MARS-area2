@@ -21,6 +21,9 @@ global current_cam
 NumberOfBalls = [1, 2, 2, 2]
 
 selected_colour = np.array([0., 0., 0.])
+selected_colour_id = 0
+
+old_selected_colour = np.array([0., 0., 0.])
 
 colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2], [1., 0.1, 0.1], [0.2, 0.2, 1.]])
 
@@ -64,22 +67,24 @@ def alignWithBlob(center, width):
         return True
     logMessage("Dif: " + str(abs(dif)) + " > " + str(TURNING_DIF))
     if dif < 0.:
-        (left_cmd, right_cmd) = (0.2, -0.2)
+        (left_cmd, right_cmd) = (0.0, -0.2)
     else:
-        (left_cmd, right_cmd) = (-0.2, 0.2)
+        (left_cmd, right_cmd) = (-0.2, 0.0)
     return False
 
 
 def findBlob(pixelData, width, height, pixelData2, width2, height2):
-    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+    global behaviour, colours, selected_colour, selected_colour_id, left_cmd, right_cmd, current_cam
 
     if len(pixelData) > 0:
-        logMessage("First Cam: Finding blobs...")
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, colours)
+        logMessage("First Cam: Looking for blobs...")
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, colours)
         if len(blobCenter) > 0:
             logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]) + " Colour: " + str(blobColour) + " Size: " + str(len(blobList)))
             if alignWithBlob(blobCenter, width):
                 selected_colour = copy.copy(blobColour)
+                selected_colour_id = blobColourID
+                logMessage("Index of colour: " + str(selected_colour_id))
                 behaviour = 1
                 (left_cmd, right_cmd) = (-0.9, -0.9)
             logMessage("")
@@ -94,7 +99,7 @@ def driveTowardsBlob(pixelData, width, height, pixelData2, width2, height2):
     (left_cmd, right_cmd) = (-1.2, -1.2)
 
     if len(pixelData) > 0:
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
 
         if len(blobCenter) > 0:
             if not alignWithBlob(blobCenter, width):
@@ -121,8 +126,8 @@ def findBlobWithSecondCam(pixelData, width, height, pixelData2, width2, height2)
     global behaviour, selected_colour, left_cmd, right_cmd, current_cam
 
     if len(pixelData) > 0:
-        logMessage("Second Cam: Finding blobs...")
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        logMessage("Second Cam: Looking for selected ball...")
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
         if len(blobCenter) > 0 and len(blobList) > MAXIMUM_SIZE/2.:
             logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]))
             if alignWithBlob(blobCenter, width):
@@ -139,8 +144,8 @@ def findBlobWithFirstCam(pixelData, width, height, pixelData2, width2, height2):
     global behaviour, selected_colour, left_cmd, right_cmd, current_cam
 
     if len(pixelData) > 0:
-        logMessage("First Cam: Finding blob...")
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        logMessage("First Cam: Looking for blob...")
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
         if len(blobCenter) > 0 and len(blobList) > MAXIMUM_SIZE/2.:
             logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]))
             if alignWithBlob(blobCenter, width):
@@ -157,8 +162,8 @@ def findField(pixelData, width, height, pixelData2, width2, height2):
     global behaviour, selected_colour, left_cmd, right_cmd, current_cam, TURNING_DIF
 
     if len(pixelData) > 0:
-        logMessage("Second Cam: Finding corner...")
-        cornerCenter, cornerList, cornerPixelList, cornerColour = findDominantBlob(pixelData2, width2, height2, np.array([selected_colour]))
+        logMessage("Second Cam: Looking for corner...")
+        cornerCenter, cornerList, cornerPixelList, cornerColour, cornerColourID = findDominantBlob(pixelData2, width2, height2, np.array([selected_colour]))
         if len(cornerCenter) > 0:
             logMessage("Corner at X: " + str(cornerCenter[0]) + " Y: " + str(cornerCenter[1]))
             if abs(cornerCenter[0] - width/2.) < CORNER_DIF:
@@ -167,7 +172,7 @@ def findField(pixelData, width, height, pixelData2, width2, height2):
                 behaviour = 4
                 (left_cmd, right_cmd) = (0.8, -0.8)
 
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
         logMessage("")
         if len(blobCenter) > 0:
             (left_cmd, right_cmd) = (-1.2, -1.2)
@@ -193,7 +198,7 @@ def pushBall(pixelData, width, height, pixelData2, width2, height2):
     (left_cmd, right_cmd) = (-1.2, -1.2)
 
     if len(pixelData) > 0:
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
 
         if len(blobCenter) > 0:
             if not alignWithBlob(blobCenter, width):
