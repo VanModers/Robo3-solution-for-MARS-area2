@@ -1,13 +1,16 @@
 from mars_interface import *
+from time import clock
 from blob_detection import findBlobs
 import random
 import copy
 import sys
 import numpy as np;
 
-TURNING_DIF = 5.0
+TURNING_DIF = 3.0
+CORNER_DIF = 12.0
 MINIMUM_DISTANCE = 2.0
-MAXIMUM_SIZE = 200
+MINIMUM_SIZE = 60
+MAXIMUM_SIZE = 500
 
 behaviour = 0
 left_cmd = 0
@@ -19,6 +22,8 @@ selected_colour = np.array([0., 0., 0.])
 
 colours = np.array([[0.3, 1., 0.3], [1., 1., 0.2]])
 
+drive_clock = clock()
+
 def findDominantBlob(pixelData, width, height, colours):
     allBlobs = []
     allBlobPixelLists = []
@@ -26,8 +31,7 @@ def findDominantBlob(pixelData, width, height, colours):
     allBlobColours = []
 
     for colour in colours:
-        logMessage("Colour: " + str(colour))
-        blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 20)
+        blobCenters, blobs, blobPixelLists = findBlobs(pixelData, width, height, colour, 120, 121, 1, 10)
         allBlobCenters += blobCenters
         allBlobs += blobs
         allBlobPixelLists += blobPixelLists
@@ -35,8 +39,6 @@ def findDominantBlob(pixelData, width, height, colours):
 
     if len(allBlobs) == 0:
         return [], [], allBlobPixelLists[0], []
-
-    logMessage("Number of blobs " + str(len(allBlobs)))
 
     index = max((len(l) - abs(width/2. - allBlobCenters[i][0])/(float(width)/10.), i) for i, l in enumerate(allBlobs))[1]
 
@@ -71,7 +73,7 @@ def findBlob(pixelData, width, height, pixelData2, width2, height2):
                 (left_cmd, right_cmd) = (-0.9, -0.9)
             logMessage("")
             return [blobPixelList, []]
-        (left_cmd, right_cmd) = (-0.8, 0.8)
+        (left_cmd, right_cmd) = (-0.2, 0.2)
         logMessage("")
     return [[], []]
 
@@ -122,6 +124,24 @@ def findBlobWithSecondCam(pixelData, width, height, pixelData2, width2, height2)
     else:
         return [[], []]
 
+def findBlobWithFirstCam(pixelData, width, height, pixelData2, width2, height2):
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+
+    if len(pixelData) > 0:
+        logMessage("First Cam: Finding blob...")
+        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        if len(blobCenter) > 0 and len(blobList) > MAXIMUM_SIZE/2.:
+            logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]))
+            if alignWithBlob(blobCenter, width):
+                logMessage("Stopping...")
+                (left_cmd, right_cmd) = (-0.9, -0.9)
+                behaviour = 5
+        else:
+            (left_cmd, right_cmd) = (0.8, -0.8)
+        return [blobPixelList, []]
+    else:
+        return [[], []]
+
 def findField(pixelData, width, height, pixelData2, width2, height2):
     global behaviour, selected_colour, left_cmd, right_cmd, current_cam, TURNING_DIF
 
@@ -130,6 +150,11 @@ def findField(pixelData, width, height, pixelData2, width2, height2):
         cornerCenter, cornerList, cornerPixelList, cornerColour = findDominantBlob(pixelData2, width2, height2, np.array([selected_colour]))
         if len(cornerCenter) > 0:
             logMessage("Corner at X: " + str(cornerCenter[0]) + " Y: " + str(cornerCenter[1]))
+            if abs(cornerCenter[0] - width/2.) < CORNER_DIF:
+                logMessage("Turning towards blob...")
+                current_cam = "cam0"
+                behaviour = 4
+                (left_cmd, right_cmd) = (0.8, -0.8)
 
         blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
         logMessage("")
@@ -143,21 +168,89 @@ def findField(pixelData, width, height, pixelData2, width2, height2):
                 else:
                     (left_cmd, right_cmd) = (-0.4, 0.0)
         else:
+            logMessage("Lost blob, trying to find it again...")
             current_cam = "cam0"
             behaviour = 1
-            (left_cmd, right_cmd) = (-0.8, 0.8)
+            (left_cmd, right_cmd) = (0.8, -0.8)
         return [blobPixelList, cornerPixelList]
     else:
         return [[], []]
+
+def pushBall(pixelData, width, height, pixelData2, width2, height2):
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam, drive_clock
+
+    (left_cmd, right_cmd) = (-1.2, -1.2)
+
+    if len(pixelData) > 0:
+        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+
+        if len(blobCenter) > 0:
+            if not alignWithBlob(blobCenter, width):
+                behaviour = 4
+                (left_cmd, right_cmd) = (0.0, 0.0)
+                return [blobPixelList, []]
+
+            logMessage("Size: " + str(len(blobList)))
+            if len(blobList) > MAXIMUM_SIZE:
+                logMessage("Pushing ball...")
+                drive_clock = clock()
+                behaviour = 6
+                (left_cmd, right_cmd) = (-0.8, -0.8)
+        else:
+            behaviour = 0
+            (left_cmd, right_cmd) = (0.0, 0.0)
+            return [blobPixelList,[]]
+
+        return [blobPixelList, []]
+    return [[], []]
+
+def driveForSomeTime(pixelData, width, height, pixelData2, width2, height2):
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+
+    (left_cmd, right_cmd) = (-1.2, -1.2)
+    if (clock() - drive_clock) > 12.:
+        (left_cmd, right_cmd) = (-1.0, 1.0)
+        behaviour = 7
+    return [[], []]
+
+def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+
+    if len(pixelData) > 0:
+        logMessage("First Cam: Turning away...")
+        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        if len(blobCenter) > 0:
+            logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]))
+        else:
+            drive_clock = clock()
+            (left_cmd, right_cmd) = (-1.0, 1.0)
+            behaviour = 8
+        return [blobPixelList, []]
+    else:
+        return [[], []]
+
+def turnForSomeTime(pixelData, width, height, pixelData2, width2, height2):
+    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+
+    (left_cmd, right_cmd) = (-1.2, 1.2)
+    if (clock() - drive_clock) > 4.:
+        (left_cmd, right_cmd) = (0.0, 0.0)
+        behaviour = 0
+    return [[], []]
 
 
 options = {0 : findBlob,
            1 : driveTowardsBlob,
            2 : findBlobWithSecondCam,
-           3 : findField
+           3 : findField,
+           4 : findBlobWithFirstCam,
+           5 : pushBall,
+           6 : driveForSomeTime,
+           7 : turnAwayFromBlob,
+           8 : turnForSomeTime
 }
 
-def initialBehavior():
+def initialBehaviour():
     global behaviour, selected_colour, left_cmd, right_cmd, current_cam
 
     behaviour = 0
@@ -165,10 +258,11 @@ def initialBehavior():
     selected_colour = np.array([0., 0., 0.])
     (left_cmd, right_cmd) = (0., 0.)
 
-def doBehavior(marsData, pixelData, width, height, pixelData2, width2, height2):
+def doBehaviour(marsData, pixelData, width, height, pixelData2, width2, height2):
     global behaviour, left_cmd, right_cmd, current_cam
 
-    #logMessage(str(colours))
+    if len(pixelData) > 0:
+        logMessage("Behaviour: " + str(behaviour))
 
     pixelLists = options[behaviour](pixelData, width, height, pixelData2, width2, height2)
 
