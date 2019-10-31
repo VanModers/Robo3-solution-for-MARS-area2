@@ -225,14 +225,24 @@ def driveForSomeTime(pixelData, width, height, pixelData2, width2, height2):
     return [[], []]
 
 def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
-    global behaviour, selected_colour, left_cmd, right_cmd, current_cam
+    global behaviour, selected_colour, selected_colour_id, old_selected_colour, left_cmd, right_cmd, current_cam, NumberOfBalls
 
     if len(pixelData) > 0:
         logMessage("First Cam: Turning away...")
-        blobCenter, blobList, blobPixelList, blobColour = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
+        blobCenter, blobList, blobPixelList, blobColour, blobColourID = findDominantBlob(pixelData, width, height, np.array([selected_colour]))
         if len(blobCenter) > 0:
             logMessage("Blob at X: " + str(blobCenter[0]) + " Y: " + str(blobCenter[1]))
         else:
+            old_selected_colour = copy.copy(selected_colour)
+            NumberOfBalls[selected_colour_id] -= 1
+            if NumberOfBalls[selected_colour_id] > 0:
+                NoOtherBalls = True
+                for Number in NumberOfBalls:
+                    if Number > 0:
+                        NoOtherBalls = False
+                if NoOtherBalls:
+                    old_selected_colour = np.array([0., 0., 0.])
+
             drive_clock = clock()
             (left_cmd, right_cmd) = (-1.0, 1.0)
             behaviour = 8
