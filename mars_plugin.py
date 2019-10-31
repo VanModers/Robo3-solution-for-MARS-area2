@@ -8,6 +8,8 @@ from behavior import initialBehaviour, doBehaviour
 
 global cda
 current_cam = "cam0"
+motor_left_cmd = 0
+motor_right_cmd = 0
 
 def init():
     global cda
@@ -22,8 +24,11 @@ def init():
 
 def update(marsData):
     global cda
-    global current_cam
+    global current_cam, motor_left_cmd, motor_right_cmd
     clearDict()
+
+    setMotor("motor_left", motor_left_cmd)
+    setMotor("motor_right", motor_right_cmd)
 
     #pixelData = cda.acquire_images()
     pixelData, rangeData = cda.acquire_pixeldata(current_cam, 80., 37., [0, 60], [160, 97], current_cam, True)
