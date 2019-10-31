@@ -9,8 +9,11 @@ import numpy as np;
 TURNING_DIF = 3.0
 CORNER_DIF = 12.0
 MINIMUM_DISTANCE = 2.0
+
+MINIMUM_CORNER_SIZE = 8
+
 MINIMUM_SIZE = 60
-MAXIMUM_SIZE = 500
+MAXIMUM_SIZE = 470
 
 behaviour = 0
 left_cmd = 0
