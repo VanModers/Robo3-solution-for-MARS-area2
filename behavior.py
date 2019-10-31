@@ -254,13 +254,22 @@ def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
         else:
             old_selected_colour = copy.copy(selected_colour)
             NumberOfBalls[selected_colour_id] -= 1
+
+            NoOtherBalls = False
             if NumberOfBalls[selected_colour_id] > 0:
                 NoOtherBalls = True
-                for Number in NumberOfBalls:
-                    if Number > 0:
-                        NoOtherBalls = False
-                if NoOtherBalls:
-                    old_selected_colour = np.array([0., 0., 0.])
+
+            index = 0
+            for Number in NumberOfBalls:
+                if Number > 0:
+                    NoOtherBalls = False
+                else:
+                    colours = np.delete(colours, index)
+                    index -= 1
+                index += 1
+
+            if NoOtherBalls:
+                old_selected_colour = np.array([0., 0., 0.])
 
             drive_clock = clock()
             (left_cmd, right_cmd) = (-1.0, 1.0)
