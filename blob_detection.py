@@ -3,7 +3,7 @@ import copy
 import sys
 import numpy as np;
 
-MINIMUM_BALL_SIZE = 2.0
+MINIMUM_BALL_SIZE = 1.0
 
 blobCenters = np.array([[]])
 blobPixels = np.array([[]])
