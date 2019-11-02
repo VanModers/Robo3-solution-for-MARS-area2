@@ -262,7 +262,8 @@ def turnAwayFromBlob(pixelData, width, height, pixelData2, width2, height2):
             index = 0
             for i in range(len(NumberOfBalls)):
                 if NumberOfBalls[index] > 0:
-                    NoOtherBalls = False
+                    if not index == selected_colour_id:
+                        NoOtherBalls = False
                 else:
                     logMessage("No " + str(colours[index]) + " any more")
                     colours = np.delete(colours, index, axis=0)
