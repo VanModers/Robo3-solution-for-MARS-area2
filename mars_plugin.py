@@ -39,9 +39,11 @@ def update(marsData):
     (motor_left_cmd, motor_right_cmd, blobPixels, cornerPixels, current_cam) = doBehaviour(marsData, pixelData, 80, 37, pixelData2, 80, 60)
     if len(pixelData) > 0:
         if len(blobPixels) > 0:
-            cda.writeImagePNGDataToFile("currentRobotBlobView", 80, 37, cda.toPixelList(blobPixels , 80, 60, 3))
+            #cda.writeImagePNGDataToFile("currentRobotBlobView", 80, 37, cda.toPixelList(blobPixels , 80, 60, 3))
+            cda.writeImageDataToFile("currentRobotBlobView", 80, 37, cda.toPixelList(blobPixels , 80, 60, 3))
         if len(cornerPixels) > 0:
-            cda.writeImagePNGDataToFile("currentRobotCornerView", 80, 60, cda.toPixelList(cornerPixels , 80, 60, 3))
+            #cda.writeImagePNGDataToFile("currentRobotCornerView", 80, 60, cda.toPixelList(cornerPixels , 80, 60, 3))
+            cda.writeImageDataToFile("currentRobotCornerView", 80, 60, cda.toPixelList(cornerPixels , 80, 60, 3))
         cda.reset_clock(current_cam)
     setMotor("motor_left", motor_left_cmd)
     setMotor("motor_right", motor_right_cmd)

@@ -1,7 +1,7 @@
 from time import clock
 from mars_interface import *
 import numpy as np;
-import png;
+#import png;
 
 CAMERA_NAMES = ["cam0", "cam1"]
 STORAGE_PATH = "./"
@@ -86,7 +86,7 @@ class CameraDataAcquisition():
                     f.write(str(int(data[x][y][2]))+ " ")
                 f.write("\n")
 
-    def writeImagePNGDataToFile(self, cam_name, width, height, data):
+    """def writeImagePNGDataToFile(self, cam_name, width, height, data):
         global cameraData, cameraSize
         pngArray = []
 
@@ -100,7 +100,7 @@ class CameraDataAcquisition():
         writer = png.Writer(width, height, greyscale = False)
 
         writer.write(fileStream, pngArray)
-        fileStream.close()
+        fileStream.close()"""
 
     def writeCameraToFile(self, cam_name):
         global cameraData, cameraSize
@@ -133,7 +133,8 @@ class CameraDataAcquisition():
         requestCameraSensor(cam_name)
         if self.elapsed_time(cam_name, 0.3) or not clock:
             self.getCameraPixelData(cam_name, newWidth, newHeight, upperCorner, lowerCorner)
-            self.writeImagePNGDataToFile(file_name, int(newWidth), int(newHeight), pixelData)
+            #self.writeImagePNGDataToFile(file_name, int(newWidth), int(newHeight), pixelData)
+            self.writeImageDataToFile(file_name, int(newWidth), int(newHeight), pixelData)
             return pixelData, rangeData
         else:
             return np.array([]), np.array([])
